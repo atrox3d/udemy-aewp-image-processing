@@ -1,0 +1,4 @@
+# opencv-python
+
+# use this version to use autocomplete in pycharm
+opencv-python==4.5.5.64
