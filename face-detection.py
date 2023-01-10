@@ -5,11 +5,12 @@ from pathlib import Path
 
 def resize(original_image, scale_percentage=None, width=None, height=None):
     """
-    resize an image to a % of the original
-    :param height:
-    :param width:
-    :param original_image:
-    :param scale_percentage:
+    resize an image to a % of the original or to specific dimwnsions
+
+    :param scale_percentage: percentage to which scale image
+    :param width: width if scale_percentage is None
+    :param height: height if scale_percentage is None
+
     :return: resized image
     """
     print(f'{original_image.shape=}')
@@ -35,6 +36,17 @@ def resize(original_image, scale_percentage=None, width=None, height=None):
 
 
 def resize_imagefile(original_path, resized_path=None, scale_percentage=None, width=None, height=None):
+    """
+    resize an image file to a % of the original or to specific dimensions
+
+    :param original_path: path to original image
+    :param resized_path: path to resized image, if None expects width and height
+    :param scale_percentage: percentage to which scale image
+    :param width: width if scale_percentage is None
+    :param height: height if scale_percentage is None
+
+    :return: None
+    """
     original_image = cv2.imread(original_path)
     resized_image = resize(original_image, scale_percentage, width, height)
 
@@ -46,6 +58,18 @@ def resize_imagefile(original_path, resized_path=None, scale_percentage=None, wi
         filename = f'{name}-{width}x{height}{ext}'
         resized_path = path.with_name(filename).__str__()
     cv2.imwrite(resized_path, resized_image)
+
+
+def get_points_from_rectangle(rectangle):
+    """
+    extracts 2 point tuples from rectangle
+    :param rectangle:
+    :return: 2 point tuples
+    """
+    x1, y1, x2, y2 = rectangle
+    pt1 = (x1, y1)
+    pt2 = (x2, y2)
+    return pt1, pt2
 
 
 if __name__ == '__main__':
@@ -64,9 +88,7 @@ if __name__ == '__main__':
     print(f'{rectangles=}')
 
     for rectangle in rectangles:
-        x1, y1, x2, y2 = rectangle
-        pt1 = (x1, y1)
-        pt2 = (x2, y2)
+        pt1, pt2 = get_points_from_rectangle(rectangle)
         color = (255, 255, 255)
         cv2.rectangle(target_image, pt1, pt2, color, 3)
 
