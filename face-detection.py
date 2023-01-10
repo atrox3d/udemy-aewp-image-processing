@@ -76,11 +76,14 @@ if __name__ == '__main__':
     rootdir = Path('face-detection-images/')
     for image_path in rootdir.glob('*'):
         original_image: numpy.ndarray = cv2.imread(image_path.__str__())
+        if original_image is None:
+            continue
         print(f'{original_image.shape=}')
 
-        resized_image: numpy.ndarray = resize(original_image, 50)
+        resized_image: numpy.ndarray = resize(original_image, 60)
         print(f'{resized_image.shape=}')
 
+        base_image = resized_image
         target_image = resized_image.copy()
         face_cascade = cv2.CascadeClassifier('faces.xml')
         faces = face_cascade.detectMultiScale(target_image, 1.1, 4)
@@ -94,8 +97,9 @@ if __name__ == '__main__':
             color = (0, 255, 0)
             cv2.rectangle(target_image, pt1, pt2, color, 3)
 
-        cv2.imshow('image', resized_image)
+        cv2.imshow('image', base_image)
         cv2.imshow('faces', target_image)
+
         key = cv2.waitKey(0)
         print(key)
         if key == 113:
