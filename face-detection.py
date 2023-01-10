@@ -73,26 +73,30 @@ def get_points_from_rectangle(rectangle):
 
 
 if __name__ == '__main__':
-    original_image: numpy.ndarray = cv2.imread('images/humans.jpeg')
-    print(f'{original_image.shape=}')
+    rootdir = Path('face-detection-images/')
+    for image_path in rootdir.glob('*'):
+        original_image: numpy.ndarray = cv2.imread(image_path.__str__())
+        print(f'{original_image.shape=}')
 
-    resized_image: numpy.ndarray = resize(original_image, 50)
-    print(f'{resized_image.shape=}')
+        resized_image: numpy.ndarray = resize(original_image, 50)
+        print(f'{resized_image.shape=}')
 
-    target_image = resized_image.copy()
-    face_cascade = cv2.CascadeClassifier('faces.xml')
-    faces = face_cascade.detectMultiScale(target_image, 1.1, 4)
-    print(f'{faces=}')
+        target_image = resized_image.copy()
+        face_cascade = cv2.CascadeClassifier('faces.xml')
+        faces = face_cascade.detectMultiScale(target_image, 1.1, 4)
+        print(f'{faces=}')
 
-    rectangles = [[x, y, x+w, y+h] for x, y, w, h in faces]
-    print(f'{rectangles=}')
+        rectangles = [[x, y, x+w, y+h] for x, y, w, h in faces]
+        print(f'{rectangles=}')
 
-    for rectangle in rectangles:
-        pt1, pt2 = get_points_from_rectangle(rectangle)
-        color = (255, 255, 255)
-        cv2.rectangle(target_image, pt1, pt2, color, 3)
+        for rectangle in rectangles:
+            pt1, pt2 = get_points_from_rectangle(rectangle)
+            color = (0, 255, 0)
+            cv2.rectangle(target_image, pt1, pt2, color, 3)
 
-    cv2.imshow('image', resized_image)
-    cv2.imshow('faces', target_image)
-    key = cv2.waitKey(0)
-    print(key)
+        cv2.imshow('image', resized_image)
+        cv2.imshow('faces', target_image)
+        key = cv2.waitKey(0)
+        print(key)
+        if key == 113:
+            break
