@@ -2,6 +2,7 @@ import cv2
 import numpy
 from pathlib import Path
 
+
 def resize(original_image, scale_percentage=None, width=None, height=None):
     """
     resize an image to a % of the original
@@ -23,6 +24,7 @@ def resize(original_image, scale_percentage=None, width=None, height=None):
     else:
         raise ValueError('Either scale_percentage or width and height must be valorized!')
 
+    # invert width and height
     dsize = w, h
     print(f'{dsize=}')
 
@@ -39,7 +41,6 @@ def resize_imagefile(original_path, resized_path=None, scale_percentage=None, wi
     if not resized_path:
         path = Path(original_path)
         height, width, _ = original_image.shape
-        # parent = path.parent
         name = path.stem
         ext = path.suffix
         filename = f'{name}-{width}x{height}{ext}'
@@ -47,35 +48,29 @@ def resize_imagefile(original_path, resized_path=None, scale_percentage=None, wi
     cv2.imwrite(resized_path, resized_image)
 
 
-image: numpy.ndarray = cv2.imread('images/humans.jpeg')
-print(f'{image.shape=}')
+if __name__ == '__main__':
+    original_image: numpy.ndarray = cv2.imread('images/humans.jpeg')
+    print(f'{original_image.shape=}')
 
-resized: numpy.ndarray = resize(image, 50)
-print(f'{resized.shape=}')
+    resized_image: numpy.ndarray = resize(original_image, 50)
+    print(f'{resized_image.shape=}')
 
-cv2.imshow('image', resized)
+    target_image = resized_image.copy()
+    face_cascade = cv2.CascadeClassifier('faces.xml')
+    faces = face_cascade.detectMultiScale(target_image, 1.1, 4)
+    print(f'{faces=}')
 
-face_cascade = cv2.CascadeClassifier('faces.xml')
+    rectangles = [[x, y, x+w, y+h] for x, y, w, h in faces]
+    print(f'{rectangles=}')
 
-faces = face_cascade.detectMultiScale(image, 1.1, 4)
-print(f'{faces=}')
+    for rectangle in rectangles:
+        x1, y1, x2, y2 = rectangle
+        pt1 = (x1, y1)
+        pt2 = (x2, y2)
+        color = (255, 255, 255)
+        cv2.rectangle(target_image, pt1, pt2, color, 3)
 
-rfaces = face_cascade.detectMultiScale(resized, 1.1, 4)
-print(f'{rfaces=}')
-
-target_faces = rfaces
-target_image = resized
-
-rectangles = [[x, y, x+w, y+h] for x, y, w, h in target_faces]
-print(f'{rectangles=}')
-
-for rectangle in rectangles:
-    x1, y1, x2, y2 = rectangle
-    pt1 = (x1, y1)
-    pt2 = (x2, y2)
-    color = (255, 255, 255)
-    cv2.rectangle(target_image, pt1, pt2, color, 3)
-
-cv2.imshow('faces', target_image)
-print(type(target_image))
-cv2.waitKey(0)
+    cv2.imshow('image', resized_image)
+    cv2.imshow('faces', target_image)
+    key = cv2.waitKey(0)
+    print(key)
