@@ -19,7 +19,17 @@ alpha = beta = 0.0
 # decrements = [x/10 for x in range(10, 0, -1)]
 # for alpha, beta in zip(decrements, decrements):
 while True:
+    output = elfs.copy()
     print(f'{alpha=}, {beta=}')
+    cv2.putText(
+        img=output,  # dest frame
+        text=f'{alpha=}, {beta=}',
+        org=(0, 25),
+        fontFace=cv2.FONT_ITALIC,
+        fontScale=1,
+        color=(0, 255, 0),
+        thickness=2,
+        lineType=cv2.LINE_AA)
     blend = cv2.addWeighted(
                             watermark_place,
                             alpha,
@@ -28,8 +38,8 @@ while True:
                             0
             )
     # cv2.imshow('blend', blend)
-    elfs[y:, x:] = blend
-    cv2.imshow('output', elfs)
+    output[y:, x:] = blend
+    cv2.imshow('output', output)
 
     key = cv2.waitKey(0)
     print(f'{key=}')
