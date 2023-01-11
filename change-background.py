@@ -7,8 +7,11 @@ background: numpy.ndarray = cv2.imread('images/safari.jpeg')
 green_pixel = foreground[0, 0]
 print(f'{green_pixel=}')
 
+height, width, _ = background.shape
+print(f'background: {width=}, {height=}')
+
 height, width, _ = foreground.shape
-print(f'{width=}, {height=}')
+print(f'foreground: {width=}, {height=}')
 
 resized_background = cv2.resize(background, (width, height))
 
@@ -19,7 +22,7 @@ for x in range(width):
         if numpy.any(pixel == [0, 255, 0]):
         # if pixel[1] > 250:
             count += 1
-            print(f'found: {count:,}')
+            # print(f'found: {count:,}')
             foreground[y, x] = resized_background[y, x]
 
 cv2.imshow('merge', foreground)
