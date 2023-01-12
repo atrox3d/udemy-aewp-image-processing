@@ -2,51 +2,55 @@ import cv2
 import numpy
 from pathlib import Path
 
+import image_helpers
+
 columns = 3
 rows = 2
 
 hmargin = 40
 vmargin = 20
 
-image_globs = Path('collage-images/').glob('*')
-image_paths = [file.__str__() for file in image_globs]
-images = dict()
+image_paths = [file.__str__() for file in Path('collage-images/').glob('*')]
+images = []
 for path in image_paths:
     image = cv2.imread(path)
+    # image = image_helpers.resize(image, 20)
     height, width, depth = image.shape
-    images.update({path: dict(image=image, height=height, width=width, depth=depth)})
+    print(f'{path=}, {image.shape=}')
+    image_dict = dict(path=path, image=image, height=height, width=width, depth=depth)
+    images.append(image_dict)
 
-# for name, item in images.items():
-#     print(name, item['width'], item['height'])
 
-# for image in images.values():
-#     _, height, width = image.values()
-#     print(height, width)
-
-max_height = max(item['height'] for name, item in images.items())
-max_width = max(item['width'] for name, item in images.items())
-max_depth = max(item['depth'] for name, item in images.items())
-print(max_height)
-print(max_width)
-print(max_depth)
+max_height = max(item['height'] for item in images)
+max_width = max(item['width'] for item in images)
+max_depth = max(item['depth'] for item in images)
 
 big_image = numpy.zeros(
                     (
-                        max_height * rows + vmargin * (rows + 1),
-                        max_width * columns + hmargin * (columns + 1),
+                        max_height * rows + hmargin * (rows + 1),
+                        max_width * columns + vmargin * (columns + 1),
                         max_depth
                     ),
                     numpy.uint8
             )
-print(big_image.shape)
 
 big_image.fill(255)
 big_image[:] = [255, 255, 255]
 
 positions = [(x, y) for x in range(columns) for y in range(rows)]
-print(positions)
 
-l = list(zip(positions, images.items()))
-print(l)
-# cv2.imshow('', big_image)
-# cv2.waitKey(0)
+for (pos_x, pos_y), image_dict in zip(positions, images):
+    path = image_dict['path']
+    width = image_dict['width']
+    height = image_dict['height']
+    image = image_dict['image']
+
+    x = pos_x * (width + vmargin) + vmargin
+    y = pos_y * (height + hmargin) + hmargin
+
+    big_image[y:y+height, x:x+width] = image
+
+    small_image = image_helpers.resize(big_image, 40)
+
+cv2.imshow('', small_image)
+cv2.waitKey(0)
