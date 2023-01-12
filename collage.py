@@ -14,9 +14,8 @@ image_paths = [file.__str__() for file in Path('collage-images/').glob('*')]
 images = []
 for path in image_paths:
     image = cv2.imread(path)
-    # image = image_helpers.resize(image, 20)
     height, width, depth = image.shape
-    print(f'{path=}, {image.shape=}')
+    # print(f'{path=}, {image.shape=}')
     image_dict = dict(path=path, image=image, height=height, width=width, depth=depth)
     images.append(image_dict)
 
@@ -50,7 +49,7 @@ for (pos_x, pos_y), image_dict in zip(positions, images):
 
     big_image[y:y+height, x:x+width] = image
 
-    small_image = image_helpers.resize(big_image, 40)
 
+small_image = image_helpers.resize(big_image, 40)
 cv2.imshow('', small_image)
 cv2.waitKey(0)
